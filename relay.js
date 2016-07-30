@@ -21,8 +21,7 @@ var server = net.createServer((socket) => {
     var current_time = new Date().getTime();
     var payload = JSON.parse(data);
     console.log("MESSAGE RECEIVED", {source: payload.source, latency: current_time-payload.time});
-    var timeout = (Math.floor(Math.random() * (10 - 2)) + 2) * 1000;
-    setTimeout(() => {pass_along({source: host, port: port, time: new Date().getTime()});}, timeout);
+    pass_along({source: host, port: port, time: new Date().getTime()});
   });
 });
 
