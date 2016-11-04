@@ -1,16 +1,17 @@
 var net = require("net");
 
-var host = process.env.HOST;
-var port = process.env.PORT;
-var to_host = process.env.TO_HOST;
-var to_port = process.env.TO_PORT;
+const HOST = "0.0.0.0";
+const PORT = 8080;
 
+var next = null;
+
+// Need a way of telling where it is going
 var pass_along = function (payload) {
   var socket = net.Socket();
 
   socket.connect({
-    port: to_port,
-    host: to_host
+    port: PORT,
+    host: next
   });
   socket.write(JSON.stringify(payload));
   socket.end();
@@ -18,14 +19,23 @@ var pass_along = function (payload) {
 
 var server = net.createServer((socket) => {
   socket.on('data', function (data) {
-    var current_time = new Date().getTime();
     var payload = JSON.parse(data);
-    console.log("MESSAGE RECEIVED", {source: payload.source, latency: current_time-payload.time});
-    pass_along({source: host, port: port, time: new Date().getTime()});
+    if (payload.educate) {
+        next = payload.next;
+        console.log("EDUCATED:", next);
+    } else {
+        if (next === null) {
+            console.log("EDUCATION REQUIRED.");
+        } else {
+            var current_time = new Date().getTime();
+            console.log("MESSAGE RECEIVED:", {source: payload.source, latency: current_time-payload.time});
+            pass_along({source: process.env.NAME, time: new Date().getTime()});
+        }
+    }
   });
 });
 
 server.listen({
-  host: host,
-  port: port
+  host: HOST,
+  port: PORT
 });

@@ -1,7 +1,14 @@
 var net = require('net');
 var socket = net.Socket();
 
-socket.connect(5000);
+var educate = process.argv[2];
+
+
+socket.connect(8080);
 var current_time = new Date().getTime();
-socket.write('{"source":"START","time":"'+current_time+'"}');
+if (educate) {
+    socket.write('{"educate":"1","next":"10.1.1.1"}');
+} else {
+    socket.write('{"source":"START","time":"'+current_time+'"}');
+}
 socket.end();
