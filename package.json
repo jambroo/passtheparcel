@@ -1,0 +1,19 @@
+{
+  "name": "passtheparcel",
+  "version": "1.0.0",
+  "description": "This is just a simple pass the parcel script",
+  "main": "relay.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jambroo/passtheparcel.git"
+  },
+  "author": "",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://github.com/jambroo/passtheparcel/issues"
+  },
+  "homepage": "https://github.com/jambroo/passtheparcel#readme"
+}
