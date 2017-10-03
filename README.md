@@ -41,3 +41,15 @@ ap-southeast-1
 ap-northeast-2
 ap-northeast-1
 ap-southeast-2
+
+### Use aws-cli to create Lambda
+```
+aws lambda create-function --function-name passTheParcel_${AWS_REGION} --runtime nodejs6.10 \
+  --role "${AWS_LAMBDA_ROLE}" \
+  --handler index.handler \
+  --code "S3Bucket=${S3_BUCKET},S3Key=${S3_KEY}" \
+  --description "${AWS_REGION} passTheParcel node." \
+  --timeout 3 --memory-size 128 \
+  --publish \
+  --region ${AWS_REGION}
+```
