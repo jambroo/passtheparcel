@@ -15,4 +15,10 @@ for region in ${REGIONS[@]}; do
   fi
 
   aws s3 cp lambda/pass_the_parcel.js.zip s3://pass-the-parcel-lambda-${region} --region ${region}
+
+  if ! aws apigateway get-rest-apis --region $region | grep -q "pass-the-parcel-${region}"; then
+    aws apigateway create-rest-api --region ${region} --name "pass-the-parcel-${region}" --description "${region} gateway for pass-the-parcel."
+  fi
+
+  REST_API_ID=$(aws apigateway get-rest-apis --region ${region} | jq ".items[] | {id, name}" | grep -A 1 "pass-the-parcel-${region}" | tail -n 1 | cut -c10-19)
 done
