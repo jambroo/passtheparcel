@@ -5,11 +5,13 @@ const lambda = new aws.Lambda({
   region: process.env.AWS_REGION
 });
 const https = require('https');
+const s3 = new aws.S3();
 
 exports.handler = (event, context, callback) => {
   let body = event;
   let status;
   let i = (body.queryStringParameters) ? parseInt(body.queryStringParameters.i) : body.i;
+  let now = new Date().getTime().toString();
 
   if (body.forward === "1") {
       console.log("FORWARDING TO "+process.env.NEXT+"?i="+i+"!")
@@ -25,32 +27,42 @@ exports.handler = (event, context, callback) => {
         context.done(null, 'FAILURE');
       });
   } else {
-    status = "CALLING_NEXT";
+    let s3Params = {
+      Body: now,
+      Bucket: "pass-the-parcel-lambda-"+process.env.AWS_REGION,
+      Key: "status"
+     };
+     s3.putObject(s3Params, function(err, data) {
+       if (err) console.log(err, err.stack);
+       else     console.log(data);
 
-    console.log("PARCEL RECEIVED ("+i+")!")
+      status = "CALLING_NEXT";
 
-    i--;
+      console.log("PARCEL RECEIVED ("+i+")!")
 
-    if (i >= 0) {
-      lambda.invoke({
-        FunctionName: 'passTheParcel',
-        InvocationType: 'Event',
-        Payload: JSON.stringify({forward: "1", i}, null, 2)
-      }, function(error, data) {
-          callback(null, {
-              statusCode: 200,
-              headers: {},
-              body: JSON.stringify({status})
-          });
-      });
-    } else {
-      status = "DONE";
+      i--;
 
-      callback(null, {
-          statusCode: 200,
-          headers: {},
-          body: JSON.stringify({status})
-      });
-    }
+      if (i >= 0) {
+        lambda.invoke({
+          FunctionName: 'passTheParcel',
+          InvocationType: 'Event',
+          Payload: JSON.stringify({forward: "1", i}, null, 2)
+        }, function(error, data) {
+            callback(null, {
+                statusCode: 200,
+                headers: {},
+                body: JSON.stringify({status})
+            });
+        });
+      } else {
+        status = "DONE";
+
+        callback(null, {
+            statusCode: 200,
+            headers: {},
+            body: JSON.stringify({status})
+        });
+      }
+    });
   }
 }
