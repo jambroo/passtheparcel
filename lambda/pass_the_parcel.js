@@ -12,8 +12,24 @@ exports.handler = (event, context, callback) => {
   let status;
   let i = (body.queryStringParameters) ? parseInt(body.queryStringParameters.i) : body.i;
   let now = new Date().getTime().toString();
+  let getResult = (body.queryStringParameters) ? body.queryStringParameters.get : body.get;
 
-  if (body.forward === "1") {
+  if (getResult === "1") {
+    let s3Params = {
+      Bucket: "pass-the-parcel-lambda-"+process.env.AWS_REGION,
+      Key: "status"
+     };
+     s3.getObject(s3Params, function(err, data) {
+       if (err) console.log(err, err.stack);
+       else     console.log(data);
+
+        callback(null, {
+            statusCode: 200,
+            headers: {},
+            body: JSON.stringify({status: data.Body.toString()})
+        });
+      });
+  } else if (body.forward === "1") {
       console.log("FORWARDING TO "+process.env.NEXT+"?i="+i+"!")
       let path = process.env.NEXT+"?i="+i;
       https.get(path, function(res) {
