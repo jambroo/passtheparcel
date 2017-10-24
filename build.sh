@@ -21,4 +21,13 @@ for region in ${REGIONS[@]}; do
   fi
 
   REST_API_ID=$(aws apigateway get-rest-apis --region ${region} | jq ".items[] | {id, name}" | grep -A 1 "pass-the-parcel-${region}" | tail -n 1 | cut -c10-19)
+
+  aws apigateway get-resources --region ${region} --rest-api-id ${REST_API_ID}
+  #  | jq ".items[] | {id, path}" | grep "\"/\""
+  aws apigateway create-resource --region ${region} --rest-api-id ${REST_API_ID} \
+    --parent-id 2y97m97iq1 --path-part passTheParcel
+  # 31yt2x7htk/resources/4f7vbc
+  # add a trigger for api gateway -> lambda
+  # api name: pass-the-parcel-us-east-1, prod, Open
+  
 done
