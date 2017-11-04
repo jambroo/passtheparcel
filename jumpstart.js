@@ -17,7 +17,6 @@ const nodes_friendly = places.map((a) => {
   return a.name;
 });
 
-const starting_node = 0;
 const WAIT_TIME = 200;
 let now = new Date();
 
@@ -26,8 +25,9 @@ if ((process.argv.length != 4) || (!Number.isInteger(parseInt(process.argv[3])))
   console.log(Number.isInteger(process.argv[3]));
 }
 
-const start_region = process.argv[2];
 const skip_count = parseInt(process.argv[3]);
+const start_region = process.argv[2];
+const starting_node = nodes_friendly.indexOf(start_region);
 
 const request = require('request');
 
@@ -42,6 +42,7 @@ const poll = (node, end) => {
       }, WAIT_TIME);
     } else {
       console.log(nodes_friendly[node], diff/1000);
+
       if (end > 0) {
         poll((node+1)%3, end-1);
       }
