@@ -6,6 +6,7 @@ const lambda = new aws.Lambda({
 });
 const https = require('https');
 const s3 = new aws.S3();
+const DEFAULT_HEADERS = {"Access-Control-Allow-Origin": "*"};
 
 exports.handler = (event, context, callback) => {
   let body = event;
@@ -25,7 +26,7 @@ exports.handler = (event, context, callback) => {
 
         callback(null, {
             statusCode: 200,
-            headers: {},
+            headers: DEFAULT_HEADERS,
             body: JSON.stringify({status: data.Body.toString()})
         });
       });
@@ -35,7 +36,7 @@ exports.handler = (event, context, callback) => {
       https.get(path, function(res) {
         callback(null, {
             statusCode: 200,
-            headers: {},
+            headers: DEFAULT_HEADERS,
             body: JSON.stringify({forward_url: process.env.NEXT})
         });
       }).on('error', function(e) {
@@ -66,7 +67,7 @@ exports.handler = (event, context, callback) => {
         }, function(error, data) {
             callback(null, {
                 statusCode: 200,
-                headers: {},
+                headers: DEFAULT_HEADERS,
                 body: JSON.stringify({status})
             });
         });
@@ -75,7 +76,7 @@ exports.handler = (event, context, callback) => {
 
         callback(null, {
             statusCode: 200,
-            headers: {},
+            headers: DEFAULT_HEADERS,
             body: JSON.stringify({status})
         });
       }
